@@ -1,0 +1,57 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "build and debug active file",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${relativeFileDirname}\\bin\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Build debug"
+        },
+        {
+            "name": "build and debug templater",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "AoC_template\\bin\\templater.exe",
+            "args": [
+                "-output_path=${workspaceFolder}",
+                "-year=${input:year}",
+                "-day=${input:day}"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Build templater"
+        },
+    ],
+    "inputs": [
+        {
+            "id": "year",
+            "description": "year:",
+            "default": "2000",
+            "type": "promptString"
+        },
+        {
+            "id": "day",
+            "description": "day:",
+            "default": "0",
+            "type": "promptString"
+        },
+    ]
+}

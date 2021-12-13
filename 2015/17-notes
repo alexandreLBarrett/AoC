@@ -1,0 +1,2 @@
+1. enlever les premiers deja traité
+2. verifier si sum du rest plus current < threshold
