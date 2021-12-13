@@ -2,8 +2,11 @@
 #include <functional>
 #include <fstream>
 #include <chrono>
-#include <ostream>
+#include <iostream>
 #include <vector>
+
+#include <clocale>
+
 
 class FileParser {
     mutable std::ifstream file;
@@ -45,6 +48,8 @@ public:
     }
 };
 
+
+template<class StreamType>
 class Timer {
 public: 
     template<class T>
@@ -56,7 +61,7 @@ public:
         return std::chrono::steady_clock::now() - start;
     }
 
-    static std::ostream& print(std::ostream& o, const std::chrono::nanoseconds& val) {
+    static StreamType& print(StreamType& o, const std::chrono::nanoseconds& val) {
         return o << "[=======| time |======]" << std::endl
             << "s: " << std::chrono::duration_cast<std::chrono::seconds>(val).count() << std::endl
             << "ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(val).count() << std::endl
@@ -65,24 +70,27 @@ public:
     }
 };
 
+template<class StreamType>
 class DayPartHandler {
 public:
-    using PrintCallback = std::function<void(std::ostream&)>;
+    using PrintCallback = std::function<void(StreamType&)>;
     using LambdaCallback = std::function<void(PrintCallback&)>;
 
-    DayPartHandler() = default;
+    DayPartHandler() {
+        setlocale(LC_ALL, "en_US.UTF-8");
+    };
 
     void AddPart(LambdaCallback func) {
         functions.push_back(func);
     }
 
-    void RunAll(std::ostream& o) const {
+    void RunAll(StreamType& o) const {
         PrintCallback printResults;
 
         int i = 1;
         for (const auto func : functions) {
             o << "Part " << i++ << ": " << std::endl;
-            Timer::print(o, Timer::time([&]{
+            Timer<StreamType>::print(o, Timer<StreamType>::time([&]{
                 func(printResults);
             }));
 
@@ -93,3 +101,8 @@ public:
 private:
     std::vector<LambdaCallback> functions;
 };
+
+int constexpr length(const char* str)
+{
+    return *str ? 1 + length(str + 1) : 0;
+}

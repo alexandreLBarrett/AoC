@@ -30,20 +30,12 @@
       {
         "type": "shell",
         "label": "Create build dirs",
-        "command": "mkdir",
-        "args": [
-          "${fileDirname}\\bin",
-          "${fileDirname}\\obj",
-        ],
+        "command": "if not exist \"${fileDirname}\\bin\" mkdir \"${fileDirname}\\bin\" && if not exist \"${fileDirname}\\obj\" mkdir \"${fileDirname}\\obj\"",
       },
       {
         "type": "shell",
         "label": "Create templater build dirs",
-        "command": "mkdir",
-        "args": [
-          "AoC_template\\bin",
-          "AoC_template\\obj",
-        ],
+        "command": "if not exist \"AoC_template\\bin\" mkdir \"AoC_template\\bin\" && if not exist \"AoC_template\\obj\" mkdir \"AoC_template\\obj\"",
       },
       {
         "type": "shell",
