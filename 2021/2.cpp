@@ -106,13 +106,13 @@ int main() {
     auto commands = fp.parseRest<Command>();
 
     Sub sub1;
-    Timer::print(cout, Timer::time([&]{
+    Timer<ostream>::print(cout, Timer<ostream>::time([&]{
         sub1.takeCommands(commands);
     }));
     cout << "Part 1: " << sub1.getPosition() << endl;
 
     Sub sub2;
-    Timer::print(cout, Timer::time([&]{
+    Timer<ostream>::print(cout, Timer<ostream>::time([&]{
         sub2.takeCommands2(commands);
     }));
     cout << "Part 2: " << sub2.getPosition() << endl;

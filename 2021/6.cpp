@@ -73,7 +73,7 @@ int main() {
     FileParser fp("2021/6-data");
     auto fishes = fp.parseRest<Fish>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     long long result;
     auto printResult = [&](ostream& o) {

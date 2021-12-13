@@ -103,7 +103,7 @@ int main() {
 
     auto eggnogs = fp.parseOne<EggnogContainers>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     dph.AddPart([=](auto& out) mutable {
         auto sol = eggnogs.getNumberOfCombinations();

@@ -123,7 +123,7 @@ int main() {
     vector<BingoCard> cards = fp.parseRest<BingoCard>();
 
     int val;
-    Timer::print(cout, Timer::time([&]{
+    Timer<ostream>::print(cout, Timer<ostream>::time([&]{
         val = processCards(caller, cards);
     }));
 

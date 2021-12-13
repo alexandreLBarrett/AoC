@@ -99,7 +99,7 @@ int main() {
     FileParser fp("2021/10-data");
     auto lines = fp.parseRest<InstructionLine>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     dph.AddPart([=](auto& o) mutable {
         int total = 0;

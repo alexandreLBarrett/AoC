@@ -65,7 +65,7 @@ int main() {
     FileParser fp("2021/7-data");
     auto subs = fp.parseRest<CrabSub>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     int minCost = INT_MAX;
     int minSteps = INT_MAX;

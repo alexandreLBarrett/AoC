@@ -74,12 +74,12 @@ int main() {
 
     int ret1, ret2;
 
-    Timer::print(cout, Timer::time([&]{
+    Timer<ostream>::print(cout, Timer<ostream>::time([&]{
         ret1 = part1(bits);
     }));
     cout << "Part 1: " << ret1 << endl;
 
-    Timer::print(cout, Timer::time([&]{
+    Timer<ostream>::print(cout, Timer<ostream>::time([&]{
         ret2 = part2(bits);
     }));
     cout << "Part 2: " << ret2 << endl;

@@ -231,7 +231,7 @@ int main() {
 
     auto segments = fp.parseRest<SegmentLine>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
     dph.AddPart([&](auto& out){
         int outputTotal = 0;
 

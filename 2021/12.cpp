@@ -101,7 +101,7 @@ int main() {
     FileParser fp("2021/12-data");
     auto caves = fp.parseOne<Caves>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     dph.AddPart([=](auto& out) mutable {
         int caveCount = caves.getUniquePaths().size();

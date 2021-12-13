@@ -119,7 +119,7 @@ int main() {
     FileParser fp("2021/9-data");
     auto seaFloor = fp.parseOne<SeaFloor>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
     
     dph.AddPart([&](auto& out) mutable {
         size_t height = 0;

@@ -80,7 +80,7 @@ int main() {
 
     auto octopusGrid = fp.parseOne<OctopusGrid>();
 
-    DayPartHandler dph;
+    DayPartHandler<ostream> dph;
 
     dph.AddPart([=](auto& out) mutable {
         for (int step = 0; step < 100; step++) {
