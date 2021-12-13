@@ -19,6 +19,14 @@
           "Build debug"
         ],
       },
+      { 
+        "type": "shell",
+        "label": "Build templater",
+        "dependsOn": [
+          "Create templater build dirs",
+          "Build templater code"
+        ],
+      },
       {
         "type": "shell",
         "label": "Create build dirs",
@@ -26,6 +34,15 @@
         "args": [
           "${fileDirname}\\bin",
           "${fileDirname}\\obj",
+        ],
+      },
+      {
+        "type": "shell",
+        "label": "Create templater build dirs",
+        "command": "mkdir",
+        "args": [
+          "AoC_template\\bin",
+          "AoC_template\\obj",
         ],
       },
       {
@@ -47,7 +64,7 @@
       },
       {
         "type": "shell",
-        "label": "Build templater",
+        "label": "Build templater code",
         "command": "cl.exe",
         "args": [
           "/Zi",
@@ -62,5 +79,4 @@
         "problemMatcher": ["$msCompile"],
       },
     ],
-    
   }
