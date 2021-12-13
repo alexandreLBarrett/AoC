@@ -21,7 +21,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "preLaunchTask": "Build debug"
+            "preLaunchTask": "Build default"
         },
         {
             "name": "build and debug templater",

@@ -3,6 +3,33 @@
     "tasks": [
       {
         "type": "shell",
+        "label": "Build default",
+        "problemMatcher": ["$msCompile"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "dependsOn": ["Build"]
+      },
+      { 
+        "type": "shell",
+        "label": "Build",
+        "dependsOn": [
+          "Create build dirs",
+          "Build debug"
+        ],
+      },
+      {
+        "type": "shell",
+        "label": "Create build dirs",
+        "command": "mkdir",
+        "args": [
+          "${fileDirname}\\bin",
+          "${fileDirname}\\obj",
+        ],
+      },
+      {
+        "type": "shell",
         "label": "Build debug",
         "command": "cl.exe",
         "args": [
@@ -17,10 +44,6 @@
           "/std:c++20"
         ],
         "problemMatcher": ["$msCompile"],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
       },
       {
         "type": "shell",
@@ -37,10 +60,6 @@
           "/std:c++20"
         ],
         "problemMatcher": ["$msCompile"],
-        "group": {
-          "kind": "build",
-          "isDefault": false
-        },
       },
     ],
     
