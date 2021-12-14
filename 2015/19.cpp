@@ -3,10 +3,32 @@
 
 using namespace std;
 
+class Molecule {
+    string molecule;
+public:
+    Molecule(ifstream& stream) {
+        getline(stream, molecule);
+        stream.ignore(1);
+    }
+};
+
+class Replacement {
+    string lhs;
+    string rhs;
+public:
+    Replacement(ifstream& stream) {
+        getline(stream, lhs, ' ');
+        stream.ignore(3);
+        getline(stream, rhs);
+    }
+};
+
 int main() {
     FileParser fp("2015/19-data-test");
 
     // Parse file
+    auto molecule = fp.parseOne<Molecule>();
+    auto replacements = fp.parseRest<Replacement>();
 
     DayPartHandler<ostream> dph;
 
