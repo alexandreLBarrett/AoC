@@ -29,7 +29,7 @@ class LightGrid {
             && index + offset < lights.size() 
             && (
                 index % sideLen + offset >= 0
-                && index % sideLen + offset <= sideLen
+                && index % sideLen + offset < sideLen
             );
     }
 
@@ -54,6 +54,34 @@ public:
         }
 
         sideLen = sqrt(lights.size());
+
+        lights[0] = true;
+        lights[sideLen - 1] = true;
+        lights[lights.size() - 1] = true;
+        lights[lights.size() - sideLen] = true;
+    }
+
+    void calculateNext2() {
+        vector<bool> nextSet = lights;
+        for (int i = 0; i < lights.size(); i++) {
+            auto surroundingValues = getSurroundings(i);
+            int lightsOn = count(begin(surroundingValues), end(surroundingValues), true);
+
+            if (
+                i == 0 
+                || i == sideLen - 1 
+                || i == lights.size() - 1
+                || i == lights.size() - sideLen
+            ) {
+                nextSet[i] = true;
+            } else {
+                nextSet[i] = lights[i] 
+                    ? lightsOn == 2 || lightsOn == 3
+                    : lightsOn == 3;
+            }
+        }
+
+        lights = move(nextSet);
     }
 
     void calculateNext() {
@@ -62,7 +90,7 @@ public:
             auto surroundingValues = getSurroundings(i);
             int lightsOn = count(begin(surroundingValues), end(surroundingValues), true);
 
-            nextSet[i] = lights[i] 
+            nextSet[i] = lights[i]
                 ? lightsOn == 2 || lightsOn == 3
                 : lightsOn == 3;
         }
@@ -78,7 +106,7 @@ public:
                 o << endl;
             }
         }
-        o << "There are " << countLightsOn() << " lights on";
+        o << "There are " << countLightsOn() << " lights on" << endl;
     }
 
     int countLightsOn() const {
@@ -88,7 +116,7 @@ public:
 
 
 int main() {
-    FileParser fp("2015/18-data-test");
+    FileParser fp("2015/18-data");
 
     auto lightGrid = fp.parseOne<LightGrid>();
 
@@ -96,17 +124,18 @@ int main() {
 
     // Part 1
     dph.AddPart([=](auto& out) mutable {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 100; i++) {
             lightGrid.calculateNext();
-            lightGrid.draw(cout);
         }
         out = [=](auto& o) { lightGrid.draw(o); };
     });
 
     // Part 2
     dph.AddPart([=](auto& out) mutable {
-
-        out = [=](auto& o) {};
+        for (int i = 0; i < 100; i++) {
+            lightGrid.calculateNext2();
+        }
+        out = [=](auto& o) { lightGrid.draw(o);};
     });
 
 
