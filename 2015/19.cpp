@@ -1,6 +1,8 @@
 #include "../helpers.h"
 #include "../common.h"
 
+#include <regex>
+
 using namespace std;
 
 class Molecule {
@@ -10,6 +12,8 @@ public:
         getline(stream, molecule);
         stream.ignore(1);
     }
+
+    vector<string> applyReplacements;
 };
 
 class Replacement {
