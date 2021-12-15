@@ -85,7 +85,7 @@ public:
     }
 
     void RunAll(StreamType& o) const {
-        PrintCallback printResults;
+        PrintCallback printResults = [](auto&){};
 
         int i = 1;
         for (const auto func : functions) {
