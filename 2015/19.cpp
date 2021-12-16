@@ -112,7 +112,7 @@ public:
                             auto first = nextQueue.begin();
                             auto last = nextQueue.end();
                             while (first!=last) {
-                                if ((*first).second==replaced) return first;
+                                if ((*first).second == replaced) return first;
                                 ++first;
                             }
                             return last;

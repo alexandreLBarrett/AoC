@@ -12,19 +12,6 @@ class LightGrid {
     int sideLen;
 
     bool check(int index, int offset) {
-        if (!(
-            index + offset >= 0 
-            && index + offset < lights.size() 
-            && (
-                index % sideLen + offset >= 0
-                && index % sideLen + offset <= sideLen
-            )
-        ))
-        {
-            int e = 0;
-            e++;
-        }
-
         return index + offset >= 0 
             && index + offset < lights.size() 
             && (
