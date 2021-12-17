@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <cassert>
 
 struct VectorHash {
     size_t operator()(const std::vector<std::string>& v) const {
