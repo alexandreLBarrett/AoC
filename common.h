@@ -33,4 +33,8 @@ struct Point {
     friend Point operator+(const Point& a, const Point& b) {
         return {a.x + b.x, a.y + b.y};
     }
+
+    bool operator==(const Point& b) {
+        return x == b.x && y == b.y;
+    }
 };
