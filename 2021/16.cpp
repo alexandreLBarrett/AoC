@@ -13,7 +13,10 @@ struct Packet {
 
     bitset<BITSET_SIZE> set;
 
-    uint64_t value;
+    uint64_t value = 0;
+    uint64_t size = 0;
+    uint64_t version = 0;
+    uint64_t type = 0;
     vector<Packet> subPackets;
     
     Packet() = default;
@@ -31,20 +34,28 @@ struct Packet {
         return version;
     }
 
-    int parseWithLength(const int baseOffset,  uint16_t len) {
+    vector<Packet> parseWithLength(const int baseOffset,  uint16_t len) {
+        vector<Packet> packets;
         uint32_t restLen = len;
         while (restLen != 0) {
-            restLen -= parse(baseOffset + len - restLen);
+            auto pack = parse(baseOffset + len - restLen);
+            restLen -= pack.size;
+            packets.push_back(pack);
         }
-        return len;
+        return packets;
     }
 
-    int parseN(const int baseOffset, uint16_t n) {
+    vector<Packet> parseN(const int baseOffset, uint16_t n) {
+        vector<Packet> packets;
+
         int totalRead = 0;
         for (int i = 0; i < n; i++) {
-            totalRead = parse(baseOffset + totalRead) + totalRead;
+            auto p = parse(baseOffset + totalRead);
+            totalRead += p.size;
+            packets.push_back(p);
         }
-        return totalRead;
+
+        return packets;
     }
 
     uint8_t getType(const int baseOffset) {
@@ -55,30 +66,30 @@ struct Packet {
         return type;
     }
 
-    int readAsOperator(const int baseOffset) {
+    vector<Packet> readAsOperator(const int baseOffset) {
         int typeIdOffset = baseOffset + 6;
         if (set[typeIdOffset] == 0) {
             uint16_t len = 0;
             for (int i = 0; i < 15; i++) {
                 len |= set[typeIdOffset + i + 1] << 14 - i;
             }
-            return parseWithLength(baseOffset + 22, len) + 22;
+            size = 22;
+            return parseWithLength(baseOffset + 22, len);
         } else {
             uint16_t len = 0;
             for (int i = 0; i < 11; i++) {
                 len |= set[typeIdOffset + i + 1] << 10 - i;
             }
-            return parseN(baseOffset + 18,  len) + 18;
+            size = 18;
+            return parseN(baseOffset + 18,  len);
         }
     }
 
-    int readAsNumber(const int baseOffset) {
-        Packet p;
-
+    void readAsNumber(const int baseOffset) {
         bool done = false;
         int subIndex = 0;
-        const uint8_t valueOffset = baseOffset + 6;
-        uint64_t value = 0;
+        const uint64_t valueOffset = baseOffset + 6;
+        value = 0;
         while (!done) {
             int subIndexOff = subIndex*5;
             done = set[valueOffset + subIndexOff] == 0;
@@ -90,21 +101,24 @@ struct Packet {
                 value = value << 4;
             subIndex++;
         }
-
-        p.value = value;
-        subPackets.push_back(p);
-        return 6 + subIndex * 5;
+        size = 6 + subIndex * 5;
     }
 
-    int parse(const int baseOffset = 0) {
-        cout << "ver: " << (int)getVersion(baseOffset) << " type: " << (int)getType(baseOffset) << endl; 
-        versionSum += getVersion(baseOffset);
+    Packet parse(const int baseOffset = 0) {
+        Packet p(set);
+        //cout << "ver: " << (int)getVersion(baseOffset) << " type: " << (int)getType(baseOffset) << endl; 
+        p.version = getVersion(baseOffset);
+        p.type = getType(baseOffset);
 
         if (getType(baseOffset) == 4) {
-            return readAsNumber(baseOffset);
+            p.readAsNumber(baseOffset);
         } else {
-            return readAsOperator(baseOffset);
+            p.subPackets = p.readAsOperator(baseOffset);
+            for (const auto& pack : p.subPackets) {
+                p.size += pack.size;
+            }
         }
+        return p;
     }
 };
 
@@ -135,18 +149,71 @@ public:
         rootPacket = Packet(set);
     }
 
-    int decode() {
-        // auto a = rootPacket.set.to_string();
-        // reverse(begin(a), end(a));
-        // cout << a << endl;
-        rootPacket.parse();
-        return rootPacket.versionSum;
+    uint64_t calcluatePacket(const Packet& pack) {
+        switch (pack.type) {
+            case 0: {
+                uint64_t total = 0;
+                for (const auto& p : pack.subPackets) {
+                    total += calcluatePacket(p);
+                }
+                return total;
+            }
+            case 1: {
+                uint64_t total = 1;
+                for (const auto& p : pack.subPackets) {
+                    total *= calcluatePacket(p);
+                }
+                return total;
+            }
+            case 2: {
+                uint64_t min = UINT64_MAX;
+                for (const auto& p : pack.subPackets) {
+                    uint64_t value = calcluatePacket(p);
+                    if (value < min)
+                        min = value;
+                }
+                return min;
+            }
+            case 3: {
+                uint64_t max = 0;
+                for (const auto& p : pack.subPackets) {
+                    uint64_t value = calcluatePacket(p);
+                    if (value > max)
+                        max = value;
+                }
+                return max;
+            }
+            case 4:
+                return pack.value;
+            case 5: {
+                return calcluatePacket(pack.subPackets[0]) > calcluatePacket(pack.subPackets[1]) ? 1 : 0;
+            }
+            case 6: {
+                return calcluatePacket(pack.subPackets[0]) < calcluatePacket(pack.subPackets[1]) ? 1 : 0;
+            }
+            case 7: {
+                return calcluatePacket(pack.subPackets[0]) == calcluatePacket(pack.subPackets[1]) ? 1 : 0;
+            }
+        }
+        return -1;
+    }
+
+    Packet decode() {
+        return rootPacket.parse();
+    }
+
+    int getVersionSum(const Packet& pack) {
+        int sumTotal = pack.version;
+        for (const Packet& sub : pack.subPackets) {
+            sumTotal += getVersionSum(sub);
+        }
+        return sumTotal;
     }
 };
 
 
 int main() {
-    FileParser fp("2021/16-data-test");
+    FileParser fp("2021/16-data");
 
     // Parse file
     auto bites = fp.parseRest<BITESDecoder>();
@@ -155,17 +222,18 @@ int main() {
 
     // Part 1
     dph.AddPart([=](auto& out) mutable {
-        for (auto b : bites) {
-            cout << b.decode() << endl;
-        }
-        
-        out = [=](auto& o) { };
+        auto packet = bites[0].decode();
+        int value = bites[0].getVersionSum(packet);
+    
+        out = [=](auto& o) { o << value << endl; };
     });
 
     // Part 2
     dph.AddPart([=](auto& out) mutable {
+        auto packet = bites[0].decode();
+        uint64_t value = bites[0].calcluatePacket(packet);
 
-        out = [=](auto& o) {};
+        out = [=](auto& o) { o << value << endl; };
     });
 
     dph.RunAll(cout);
