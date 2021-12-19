@@ -12,14 +12,18 @@ public:
 
     Node(TYPE type) : type(type) {}
     Node(const Node& src) {
-        if (type == TYPE::VALUE) {
-            value = src.value;
-        } else {
-            if (src.left != nullptr)
-                left = new Node(*src.left);
+        depth = src.depth;
+        type = src.type;
+        value = src.value;
 
-            if (src.right != nullptr) 
-                right = new Node(*src.right);
+        if (src.left) {
+            left = new Node(*src.left);
+            left->parent = this;
+        }
+
+        if (src.right)  {
+            right = new Node(*src.right);
+            right->parent = this;
         }
     }
 

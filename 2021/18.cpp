@@ -3,15 +3,16 @@
 #include "18.h"
 
 #include <queue>
-#include <set>
 
 using namespace std;
 
 using MathNode = Node<int16_t>;
 
 class MathProblem {
-public:
     MathNode root; 
+
+    list<MathNode*> leafs;
+public:
     MathProblem(ifstream& stream) {
         root.type = MathNode::TYPE::NODE;
         MathNode* current = &root;
@@ -67,10 +68,15 @@ public:
     }
 
     void explode(MathNode* node) {
-        if (node == node->parent->left) {
-            node->parent->value += node->right->value;
-        } else if (node == node->parent->right) {
-            node->parent->value += node->left->value;
+
+        auto it = find(begin(leafs), end(leafs), node->left);
+
+        if (index != > 0) {
+            leafs[index - 1]->value += node->left->value;
+        }
+
+        if (index++) {
+            leafs[index + 1]->value += node->left->value;
         }
 
         delete node->left;
@@ -103,18 +109,20 @@ public:
             auto current = q.front();
             q.pop();
 
-            if (current->depth == 4) {
-                explode(current);
-            }
-
             if (current->type == MathNode::TYPE::VALUE) {
                 if (current->value >= 10) {
                     splits(current);
                 }
                 cout << current->value << endl;
             } else {
-                q.push(current->left);
-                q.push(current->right);
+                if (current->depth == 4) {
+                    explode(current);
+                }
+
+                if (current->left)
+                    q.push(current->left);
+                if (current->right)
+                    q.push(current->right);
             }
         }
     }
