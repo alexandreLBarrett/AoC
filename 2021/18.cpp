@@ -9,13 +9,24 @@ using namespace std;
 using MathNode = Node<int16_t>;
 
 class MathProblem {
-    MathNode root; 
+    MathNode* root; 
 
     list<MathNode*> leafs;
 public:
+    ~MathProblem() {
+        leafs.clear();
+        delete root;
+        root = nullptr;
+    }
+
+    MathProblem(const MathProblem& src) {
+        *this = src;
+    }
+
     MathProblem(ifstream& stream) {
-        root.type = MathNode::TYPE::NODE;
-        MathNode* current = &root;
+        root = new MathNode();
+        root->type = MathNode::TYPE::NODE;
+        MathNode* current = root;
 
         string line;
         getline(stream, line);
@@ -44,87 +55,148 @@ public:
                     break;
                 }
                 case ']':
-                    if (current != &root)
+                    if (current != root)
                         current = current->parent;
                     break;
                 default:
                     current->type = MathNode::TYPE::VALUE;
                     current->value = *it - '0';
+                    leafs.push_back(current);
                     current = current->parent;
                     break;
             }
         }
     }
 
-    string toString(MathNode* n) {
+    string toString(MathNode* n) const {
         if (n->type == MathNode::TYPE::VALUE)
             return to_string(n->value);
 
         return "[" + toString(n->left) + "," + toString(n->right) + "]";
     }
 
-    void print(ostream& os) {
-        os << toString(&root) << endl;
+    void print(ostream& os) const {
+        os << toString(root) << endl;
     }
 
     void explode(MathNode* node) {
-
-        auto it = find(begin(leafs), end(leafs), node->left);
-
-        if (index != > 0) {
-            leafs[index - 1]->value += node->left->value;
+        auto leftIt = find(begin(leafs), end(leafs), node->left);
+        if (leftIt != begin(leafs)) {
+            (*prev(leftIt))->value += node->left->value;
         }
 
-        if (index++) {
-            leafs[index + 1]->value += node->left->value;
+        auto rightIt = find(begin(leafs), end(leafs), node->right);
+        if (next(rightIt) != end(leafs)) {
+            (*next(rightIt))->value += node->right->value;
         }
+
+        leafs.insert(leftIt, node);
+        leafs.erase(leftIt);
+        leafs.erase(rightIt);
 
         delete node->left;
+        node->left = nullptr;
         delete node->right;
+        node->right = nullptr;
+
         node->type = MathNode::TYPE::VALUE;
         node->value = 0;
     }
 
     void splits(MathNode* node) {
         double value = node->value;
+        auto it = find(begin(leafs), end(leafs), node);
 
         auto n = new MathNode();
         n->type = MathNode::TYPE::VALUE;
         n->value = floor(value / 2);
-
+        n->depth = node->depth + 1;
         node->left = n;
+
+        leafs.insert(it, n);
 
         n = new MathNode();
         n->type = MathNode::TYPE::VALUE;
         n->value = ceil(value / 2);
-
+        n->depth = node->depth + 1;
         node->right = n;
+
+        leafs.insert(it, n);
+        leafs.erase(it);
+
+        node->type = MathNode::TYPE::NODE;
+        node->value = 0;
     }
 
-    void reduce() {
-        queue<MathNode*> q;
-        q.push(&root);
-
-        while (q.size() > 0) {
-            auto current = q.front();
-            q.pop();
-
-            if (current->type == MathNode::TYPE::VALUE) {
-                if (current->value >= 10) {
-                    splits(current);
+    bool reduceOne() {
+        return root->traverse(MathNode::TraversalType::PRE, [this](MathNode* node){
+            if (node->type != MathNode::TYPE::VALUE) {
+                if (node->depth == 4) {
+                    explode(node);
+                    return true;
                 }
-                cout << current->value << endl;
-            } else {
-                if (current->depth == 4) {
-                    explode(current);
-                }
-
-                if (current->left)
-                    q.push(current->left);
-                if (current->right)
-                    q.push(current->right);
             }
+            return false;
+        }) || 
+         root->traverse(MathNode::TraversalType::PRE, [this](MathNode* node){
+            if (node->type == MathNode::TYPE::VALUE) {
+                if (node->value >= 10) {
+                    splits(node);
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    int64_t getMagnitude() const {
+        return getMagnitude(root);
+    }
+
+    int64_t getMagnitude(MathNode* node) const {
+        if (node->type == MathNode::TYPE::VALUE) {
+            return node->value;
         }
+
+        return (3 * getMagnitude(node->left)) + (2 * getMagnitude(node->right));
+    }
+
+    MathProblem& operator+(const MathProblem& mathP) {
+        MathNode* n = new MathNode();
+        n->left = root;
+        root->parent = n;
+
+        auto* node = new MathNode(*mathP.root);
+        n->right = node;
+        node->parent = n;
+
+        root = n;
+        root->traverse(MathNode::TraversalType::PRE, [this](MathNode* node) {
+            if (node->type == MathNode::TYPE::VALUE) {
+                leafs.push_back(node);
+            }
+            return false;
+        });
+
+        root->updateDepth();
+
+        return *this;
+    }
+
+    MathProblem& operator=(const MathProblem& src) {
+        leafs.clear();
+        root = new MathNode(*src.root);
+
+        root->traverse(MathNode::TraversalType::PRE, [this](MathNode* node) {
+            if (node->type == MathNode::TYPE::VALUE) {
+                leafs.push_back(node);
+            }
+            return false;
+        });
+
+        root->updateDepth();
+
+        return *this;
     }
 };
 
@@ -138,16 +210,34 @@ int main() {
 
     // Part 1
     dph.AddPart([=](auto& out) mutable {
-        for (auto prob : problems) {
-            prob.reduce();
-            prob.print(cout);
+        auto p = problems[0];
+        for (int i = 1; i < problems.size(); i++) {
+            p = p + problems[i];
+            while (p.reduceOne());
         }
-        out = [=](auto& o) {};
+        out = [=](auto& o) { 
+            p.print(o);
+            o << p.getMagnitude() << endl; 
+        };
     });
 
     // Part 2
     dph.AddPart([=](auto& out) mutable {
-        out = [=](auto& o) {};
+        int64_t maxVal = 0;
+        for (int i = 0; i < problems.size(); i++) {
+            for (int j = i + 1; j < problems.size(); j++) {
+                auto p = problems[i] + problems[j];
+                while (p.reduceOne());
+                int64_t mag = p.getMagnitude();
+                cout << "mag " << i << "-" << j << ":" << mag << endl;
+                if (mag > maxVal) {
+                    maxVal = mag;
+                }
+            }
+        }
+        out = [=](auto& o) { 
+            o << maxVal << endl;
+        };
     });
 
     dph.RunAll(cout);
