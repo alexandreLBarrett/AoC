@@ -21,3 +21,4 @@ I currently have worked on these AoC years:
 
 - [2015](https://adventofcode.com/2015)
 - [2021](https://adventofcode.com/2021)
+- [2022](https://adventofcode.com/2022)

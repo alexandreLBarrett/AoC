@@ -16,8 +16,10 @@ struct VectorHash {
     }
 };
 
+template<class T = uint8_t>
 struct Point {
     int64_t x = 0, y = 0;
+    T* value = nullptr;
 
     int toIndex(Point p, uint64_t lineLength) {
         return x + y * lineLength;
@@ -32,11 +34,26 @@ struct Point {
         return x > 0 && y > 0;
     }
 
-    friend Point operator+(const Point& a, const Point& b) {
+    friend Point<T> operator+(const Point<T>& a, const Point<T>& b) {
         return {a.x + b.x, a.y + b.y};
     }
 
-    bool operator==(const Point& b) {
+    bool operator==(const Point<T>& b) {
         return x == b.x && y == b.y;
+    }
+
+    Point<T>& operator=(const Point<T>& b) {
+        x = b.x;
+        y = b.y;
+        return *this;
+    }
+
+    bool operator<(const Point<T>& a) const {
+        if (x == a.x) {
+            return y < a.y;
+        } else {
+            return x < a.x;
+        }
+        return false;
     }
 };
