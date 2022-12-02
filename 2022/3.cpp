@@ -3,10 +3,10 @@
 
 using namespace std;
 
-// puzzle: https://adventofcode.com/__YEAR__/day/__DAY__
+// puzzle: https://adventofcode.com/2022/day/3
 
 int main() {
-    FileParser fp("__YEAR__/__DAY__-data-test");
+    FileParser fp("2022/3-data-test");
 
     // Parse file
 

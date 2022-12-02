@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.jr": "java",
         "iosfwd": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
@@ -76,6 +77,7 @@
         "span": "cpp",
         "filesystem": "cpp",
         "unordered_set": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "code_template": "cpp"
     }
 }
