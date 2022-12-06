@@ -3,24 +3,16 @@
 
 using namespace std;
 
-// puzzle: https://adventofcode.com/2022/day/6
-
-class ElfStream {
-    string s;
-public:
-
-    ElfStream(istream& is) {
-        
-    }
-};
+// puzzle: https://adventofcode.com/2022/day/7
 
 int main() {
-    FileParser fp("2022/6-data-test");
+    FileParser fp("2022/7-data-test");
 
     // Parse file
 
     DayPartHandler<ostream> dph;
 
+    // Part 1
     dph.AddPart([=](auto& out) mutable {
 
         out = [=](auto& o) {};

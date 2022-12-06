@@ -4,38 +4,52 @@
       {
         "type": "shell",
         "label": "Build default",
-        "problemMatcher": ["$msCompile"],
+        "problemMatcher": [
+          "$msCompile"
+        ],
         "group": {
           "kind": "build",
           "isDefault": true
         },
-        "dependsOn": ["Build"]
+        "dependsOn": [
+          "Build"
+        ]
       },
-      { 
+      {
         "type": "shell",
         "label": "Build",
         "dependsOn": [
           "Create build dirs",
           "Build debug"
-        ],
+        ]
       },
-      { 
+      {
+        "label": "run templater",
+        "command": "AoC_template\\bin\\templater.exe",
+        "args": [
+          "-output_path=${workspaceFolder}",
+          "-year=${input:year}",
+          "-day=${input:day}"
+        ],
+        "problemMatcher": []
+      },
+      {
         "type": "shell",
         "label": "Build templater",
         "dependsOn": [
           "Create templater build dirs",
           "Build templater code"
-        ],
+        ]
       },
       {
         "type": "shell",
         "label": "Create build dirs",
-        "command": "if not exist \"${fileDirname}\\bin\" mkdir \"${fileDirname}\\bin\" && if not exist \"${fileDirname}\\obj\" mkdir \"${fileDirname}\\obj\"",
+        "command": "if not exist \"${fileDirname}\\bin\" mkdir \"${fileDirname}\\bin\" && if not exist \"${fileDirname}\\obj\" mkdir \"${fileDirname}\\obj\""
       },
       {
         "type": "shell",
         "label": "Create templater build dirs",
-        "command": "if not exist \"AoC_template\\bin\" mkdir \"AoC_template\\bin\" && if not exist \"AoC_template\\obj\" mkdir \"AoC_template\\obj\"",
+        "command": "if not exist \"AoC_template\\bin\" mkdir \"AoC_template\\bin\" && if not exist \"AoC_template\\obj\" mkdir \"AoC_template\\obj\""
       },
       {
         "type": "shell",
@@ -52,7 +66,9 @@
           "${file}",
           "/std:c++20"
         ],
-        "problemMatcher": ["$msCompile"],
+        "problemMatcher": [
+          "$msCompile"
+        ]
       },
       {
         "type": "shell",
@@ -68,7 +84,23 @@
           "AoC_template\\templater.cpp",
           "/std:c++20"
         ],
-        "problemMatcher": ["$msCompile"],
-      },
+        "problemMatcher": [
+          "$msCompile"
+        ]
+      }
     ],
+    "inputs": [
+      {
+          "id": "year",
+          "description": "year:",
+          "default": "202",
+          "type": "promptString"
+      },
+      {
+          "id": "day",
+          "description": "day:",
+          "default": "0",
+          "type": "promptString"
+      },
+    ]
   }
