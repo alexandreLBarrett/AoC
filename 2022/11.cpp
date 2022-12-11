@@ -12,9 +12,7 @@ using namespace std;
 
 // puzzle: https://adventofcode.com/2022/day/11
 
-using uint128_t = double_integer<uint64_t, uint64_t>;
-using uint256_t = double_integer<uint128_t, uint128_t>;
-using WorryLevel = double_integer<uint256_t, uint256_t>;
+using WorryLevel = uint64_t;
 
 struct Throw {
     WorryLevel worryValue;
@@ -25,10 +23,10 @@ struct Throw {
 class Monkey {
     queue<WorryLevel> items;
     function<void(WorryLevel&)> operation;
-    int divisibleBy;
     int monkeyIfTrue;
     int monkeyIfFalse;
 public:
+    int divisibleBy;
     Monkey(istream& is) {
         string s, statement;
         while (getline(is, s) && s != "") {
@@ -97,11 +95,14 @@ public:
 class MonkeyCircle {
     vector<Monkey> monkeys;
     vector<uint64_t> monkeyTurns;
+    uint64_t bigMod = 1;
 public:
     MonkeyCircle(istream& is) {
         while (is) {
-            monkeys.emplace_back(is);
+            auto m = Monkey(is);
+            monkeys.push_back(m);
             monkeyTurns.push_back(0);
+            bigMod *= m.divisibleBy;
         }
     }
 
@@ -112,7 +113,7 @@ public:
                 while (!monkey.isEmptyHanded()) {
                     auto throwTo = monkey.inspect(worryDepr);
                     monkeyTurns[i]++;
-                    monkeys[throwTo.targetMonkey].catchItem(throwTo.worryValue);
+                    monkeys[throwTo.targetMonkey].catchItem(throwTo.worryValue % bigMod);
                 }
             }
         }
@@ -135,7 +136,7 @@ ostream& print(ostream& o, uint64_t i) {
 }
 
 int main() {
-    FileParser fp("2022/11-data-test");
+    FileParser fp("2022/11-data");
 
     // Parse file
     auto mc = fp.parseOne<MonkeyCircle>();
@@ -147,7 +148,7 @@ int main() {
         mc.inspectMonkeys(20, true);
         WorryLevel mult = mc.getWorryMult();
         out = [=](auto& o) {
-            //o << print(o, mult) << endl;
+            o << mult << endl;
         };
     });
 
@@ -156,7 +157,7 @@ int main() {
         mc.inspectMonkeys(10000, false);
         WorryLevel mult = mc.getWorryMult();
         out = [=](auto& o) {
-            //o << print(o, mult) << endl;
+            o << mult << endl;
         };
     });
 
