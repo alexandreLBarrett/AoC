@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.mustache": "html",
         "*.jr": "java",
         "iosfwd": "cpp",
         "vector": "cpp",
@@ -78,6 +79,7 @@
         "filesystem": "cpp",
         "unordered_set": "cpp",
         "regex": "cpp",
-        "code_template": "cpp"
+        "code_template": "cpp",
+        "*.tcc": "cpp"
     }
 }
