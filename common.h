@@ -16,10 +16,13 @@ struct VectorHash {
     }
 };
 
-template<class T = uint8_t>
+template<class T = void>
 struct Point {
     int64_t x = 0, y = 0;
     T* value = nullptr;
+
+    Point() = default;
+    Point(int64_t x, int64_t y) : x(x), y(y) {}
 
     int toIndex(Point p, uint64_t lineLength) {
         return x + y * lineLength;
