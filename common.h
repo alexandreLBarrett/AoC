@@ -19,10 +19,11 @@ struct VectorHash {
 template<class T = void>
 struct Point {
     int64_t x = 0, y = 0;
-    T* value = nullptr;
+    T value;
 
     Point() = default;
     Point(int64_t x, int64_t y) : x(x), y(y) {}
+    Point(int64_t x, int64_t y, T value) : x(x), y(y), value(value) {}
 
     int toIndex(Point p, uint64_t lineLength) {
         return x + y * lineLength;
@@ -48,6 +49,7 @@ struct Point {
     Point<T>& operator=(const Point<T>& b) {
         x = b.x;
         y = b.y;
+        value = b.value;
         return *this;
     }
 
