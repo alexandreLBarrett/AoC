@@ -16,7 +16,7 @@ struct VectorHash {
     }
 };
 
-template<class T = void>
+template<class T = char>
 struct Point {
     int64_t x = 0, y = 0;
     T value;
@@ -42,8 +42,8 @@ struct Point {
         return {a.x + b.x, a.y + b.y};
     }
 
-    bool operator==(const Point<T>& b) {
-        return x == b.x && y == b.y;
+    friend bool operator==(const Point<T>& a, const Point<T>& b) {
+        return a.x == b.x && a.y == b.y;
     }
 
     Point<T>& operator=(const Point<T>& b) {
@@ -51,6 +51,13 @@ struct Point {
         y = b.y;
         value = b.value;
         return *this;
+    }
+
+    friend Point<T> operator-(Point& p1, Point<T>& p2) {
+        return Point<T>(
+            p2.x - p1.x,
+            p2.y - p1.y
+        );
     }
 
     bool operator<(const Point<T>& a) const {
