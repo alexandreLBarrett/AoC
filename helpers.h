@@ -64,11 +64,21 @@ public:
     }
 
     static StreamType& print(StreamType& o, const std::chrono::nanoseconds& val) {
-        return o << "[=======| time |======]" << std::endl
-            << "s: " << std::chrono::duration_cast<std::chrono::seconds>(val).count() << std::endl
-            << "ms: " << std::chrono::duration_cast<std::chrono::milliseconds>(val).count() << std::endl
-            << "ns: " << val.count() << std::endl
-            << "[=====================]" << std::endl;
+        o << "[=======| time |======]" << std::endl;
+
+        double time = std::chrono::duration_cast<std::chrono::duration<double>>(val).count();
+        if (time > 1) {
+            o << time << "s" << std::endl;
+        } else {
+            auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(val).count();
+            auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(val).count();
+
+            double millis = milli + nano / 1000.0f;
+
+            o << millis << "ms" << std::endl;
+        }
+        o << "[=====================]" << std::endl;
+        return o;
     }
 };
 
