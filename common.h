@@ -16,20 +16,20 @@ struct VectorHash {
     }
 };
 
-template<class T = char>
+template<class IndexType = int64_t, class ValueType = char>
 struct Point {
-    int64_t x = 0, y = 0;
-    T value;
+    IndexType x = 0, y = 0;
+    ValueType value;
 
     Point() = default;
-    Point(int64_t x, int64_t y) : x(x), y(y) {}
-    Point(int64_t x, int64_t y, T value) : x(x), y(y), value(value) {}
+    Point(IndexType x, IndexType y) : x(x), y(y) {}
+    Point(IndexType x, IndexType y, ValueType value) : x(x), y(y), value(value) {}
 
     int toIndex(Point p, uint64_t lineLength) {
         return x + y * lineLength;
     }
 
-    void fromIndex(uint64_t i, uint64_t lineLength) {
+   void fromIndex(uint64_t i, uint64_t lineLength) {
         x = i % lineLength;
         y = i / lineLength;
     }
@@ -38,29 +38,37 @@ struct Point {
         return x > 0 && y > 0;
     }
 
-    friend Point<T> operator+(const Point<T>& a, const Point<T>& b) {
+    friend Point operator+(const Point& a, const Point& b) {
         return {a.x + b.x, a.y + b.y};
     }
 
-    friend bool operator==(const Point<T>& a, const Point<T>& b) {
+    friend bool operator==(const Point& a, const Point& b) {
         return a.x == b.x && a.y == b.y;
     }
 
-    Point<T>& operator=(const Point<T>& b) {
+    Point& operator=(const Point& b) {
         x = b.x;
         y = b.y;
         value = b.value;
         return *this;
     }
 
-    friend Point<T> operator-(Point& p1, Point<T>& p2) {
-        return Point<T>(
+    friend Point operator-(Point& p1, Point& p2) {
+        return Point(
             p2.x - p1.x,
             p2.y - p1.y
         );
     }
+    
+    friend Point operator^(const Point& p1, const Point& p2) {
 
-    bool operator<(const Point<T>& a) const {
+    }
+
+    friend double operator*(const Point& p1, const Point& p2) {
+        return p1.x * p2.x + p1.y + p2.y;
+    }
+
+    bool operator<(const Point& a) const {
         if (x == a.x) {
             return y < a.y;
         } else {
@@ -69,3 +77,9 @@ struct Point {
         return false;
     }
 };
+
+template<class IndexType, class ValueType = char>
+std::ostream& operator<<(std::ostream& o, const Point<IndexType, ValueType>& p) {
+    o << "(" << p.x << "," << p.y << ")";
+    return o;
+}
