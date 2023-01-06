@@ -1,13 +1,18 @@
 #include "../helpers.h"
 #include "../common.h"
-#include "../string_manip.h"
 
 #include <regex>
 #include <map>
+#include <array>
 
 using namespace std;
 
 // puzzle: https://adventofcode.com/2022/day/19
+
+/*
+NOTE:
+    Recursive brute force is too rough
+*/
 
 struct Blueprint {
     uint32_t costs[4][4] = {
@@ -23,6 +28,17 @@ struct Blueprint {
         if (type == "obsidian") return 2;
         if (type == "geode") return 3;
         return -1;
+    }
+
+    bool build(array<uint32_t, 4>& materials, uint32_t robotType) {
+        for (int i = 0; i < 4; ++i)
+            if (materials[i] < costs[robotType][i])
+                return false;
+
+        for (int i = 0; i < 4; ++i)
+            materials[i] -= costs[robotType][i];
+
+        return true;
     }
     
     Blueprint(istream& is) {
@@ -63,12 +79,10 @@ struct Fleet {
     // 1 = clay
     // 2 = obsidian
     // 3 = geode
-    uint32_t materials[4] = { 0, 0, 0, };
-    uint32_t robots[4] = { 1, 0, 0, 0 };
 
     Fleet(const Blueprint& bp) : blueprint(bp) {}
 
-    void printState() {
+    void printState(array<uint32_t, 4> robots, array<uint32_t, 4> materials) {
         cout << "------------------------------------" << endl
             << "Robots: " << endl
             << "    ore: " << robots[0] << endl
@@ -82,26 +96,40 @@ struct Fleet {
             << "    geode: " << materials[3] << endl << endl;
     }
 
-    void simulate(uint32_t simulationTime) {
-        while (simulationTime != 0) {
-            // Decide whether to build a robot or not
+    // recursive with input:
+    //  materials[] : current materials counts
+    //  robots[] : current robot counts
+    // returns: 
+    //  number of geodes
 
-            // Each robot harvests that turn
-            for (int i = 0; i < 4; ++i) {
-                for (int j = 0; j < robots[i]; ++j) {
-                    materials[i]++;
-                }
+
+    uint32_t simulateForGeodes(uint32_t simulationTime
+        , array<uint32_t, 4> robots
+        , array<uint32_t, 4> materials
+    ) {
+        if (simulationTime == 0)
+            return materials[3];
+
+        //printState(robots, materials);
+
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < robots[i]; ++j) {
+                materials[i]++;
             }
-
-            printState();
-
-            // A minute passes
-            --simulationTime;
         }
-    }
 
-    uint32_t getGeodeCount() {
-        return materials[3];
+        uint32_t maxGeodes = 0;
+
+        for (int i = 0; i < 4; ++i) {
+            array<uint32_t, 4> newRobots = robots;
+            array<uint32_t, 4> newMaterials = materials;
+            if (blueprint.build(newMaterials, i)) {
+                newRobots[i]++;
+                maxGeodes = max(maxGeodes, simulateForGeodes(simulationTime - 1, newRobots, newMaterials));
+            }
+        }
+
+        return max(maxGeodes, simulateForGeodes(simulationTime - 1, robots, materials));
     }
 };
 
@@ -112,14 +140,16 @@ int main() {
     // Parse file
     auto blueprints = fp.parseRest<Blueprint>();
 
-    Fleet fleet(blueprints[0]);
-    fleet.simulate(24);
-
     DayPartHandler<ostream> dph;
 
     // Part 1
     dph.AddPart([=](auto& out) mutable {
-        
+        for (auto blueprint : blueprints) {
+            Fleet fleet(blueprint);
+            auto maxGeodes = fleet.simulateForGeodes(24, {1,0,0,0}, {0,0,0,0});
+            cout << maxGeodes << endl;
+        }
+
         out = [=](auto& o) {};
     });
 
