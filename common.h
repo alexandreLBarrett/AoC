@@ -5,11 +5,12 @@
 #include <sstream>
 #include <cassert>
 
+template<class T>
 struct VectorHash {
-    size_t operator()(const std::vector<std::string>& v) const {
-        std::hash<std::string> hasher;
+    size_t operator()(const std::vector<T>& v) const {
+        std::hash<T> hasher;
         size_t seed = 0;
-        for (std::string i : v) {
+        for (const T& i : v) {
             seed ^= hasher(i) + 0x9e3779b9 + (seed<<6) + (seed>>2);
         }
         return seed;
@@ -23,9 +24,9 @@ struct Point {
 
     Point() = default;
     Point(IndexType x, IndexType y) : x(x), y(y) {}
-    Point(IndexType x, IndexType y, ValueType value) : x(x), y(y), value(value) {}
+    Point(IndexType x, IndexType y, const ValueType& value) : x(x), y(y), value(value) {}
 
-    int toIndex(Point p, uint64_t lineLength) {
+    int toIndex(const Point& p, uint64_t lineLength) {
         return x + y * lineLength;
     }
 

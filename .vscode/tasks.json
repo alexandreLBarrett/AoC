@@ -44,12 +44,12 @@
       {
         "type": "shell",
         "label": "Create build dirs",
-        "command": "if not exist \"${fileDirname}\\bin\" mkdir \"${fileDirname}\\bin\" && if not exist \"${fileDirname}\\obj\" mkdir \"${fileDirname}\\obj\""
+        "command": "${workspaceFolder}/build_setup.ps1 ${fileDirname}"
       },
       {
         "type": "shell",
         "label": "Create templater build dirs",
-        "command": "if not exist \"AoC_template\\bin\" mkdir \"AoC_template\\bin\" && if not exist \"AoC_template\\obj\" mkdir \"AoC_template\\obj\""
+        "command": "${workspaceFolder}/build_setup.ps1 AoC_template"
       },
       {
         "type": "shell",
@@ -58,6 +58,7 @@
         "args": [
           "/Zi",
           "/EHsc",
+          "/MP",
           "/Fe:",
           "${relativeFileDirname}\\bin\\${fileBasenameNoExtension}.exe",
           "/Fo:${relativeFileDirname}\\obj\\",
@@ -77,6 +78,7 @@
         "args": [
           "/Zi",
           "/EHsc",
+          "/MP",
           "/Fe:",
           "AoC_template\\bin\\templater.exe",
           "/Fo:AoC_template\\obj\\",

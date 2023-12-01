@@ -13,8 +13,9 @@
 class FileParser {
     mutable std::ifstream file;
 public:
-    FileParser(const std::string& filename) {
-        file = std::ifstream(filename);
+    FileParser(const std::string& filename) 
+        : file{filename}
+    {
     }
 
     template<class T>
@@ -24,7 +25,9 @@ public:
 
     template<class T>
     constexpr T parseOne() const noexcept {
-        return T(file);
+        T val;
+        file >> val;
+        return val;
     }
 
     template<class T>
@@ -32,7 +35,7 @@ public:
         std::vector<T> container;
 
         while (file && !file.eof()) {
-            container.push_back(process(file));
+            container.push_back(parseOne<T>(process));
         }
 
         return container;
@@ -40,20 +43,18 @@ public:
 
     template<class T>
     constexpr std::vector<T> parseRest() const noexcept {
-        return parseRest<T>([](std::ifstream& ss) {
-            return T(ss);
-        });
-    }
+        std::vector<T> container;
 
-    ~FileParser() {
-        file.close();
+        while (file && !file.eof()) {
+            container.push_back(parseOne<T>());
+        }
+
+        return container;
     }
 };
 
-
 template<class StreamType>
-class Timer {
-public: 
+class DayPartHandler {
     template<class T>
     static std::chrono::nanoseconds time(T func) {
         auto start = std::chrono::steady_clock::now();
@@ -80,10 +81,6 @@ public:
         o << "[=====================]" << std::endl;
         return o;
     }
-};
-
-template<class StreamType>
-class DayPartHandler {
 public:
     using PrintCallback = std::function<void(StreamType&)>;
     using LambdaCallback = std::function<void(PrintCallback&)>;
@@ -101,8 +98,9 @@ public:
 
         int i = 1;
         for (const auto func : functions) {
-            o << "Part " << i++ << ": " << std::endl;
-            Timer<StreamType>::print(o, Timer<StreamType>::time([&]{
+            o << "Part " << i++ << ": \n";
+
+            print(o, time([&]{
                 func(printResults);
             }));
 

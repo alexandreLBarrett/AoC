@@ -8,13 +8,8 @@ using namespace std;
 int main() {
     FileParser fp("2023/1-data");
 
-    struct 
     // Parse file
-    std::vector<std::string> lines = fp.parseRest<std::string>([](std::ifstream& ss) {
-        std::string s;
-        ss >> s;
-        return s;
-    });
+    auto lines = fp.parseRest<std::string>();
 
     DayPartHandler<ostream> dph;
 
@@ -29,8 +24,7 @@ int main() {
             auto latterVal = std::find_if(line.rbegin(), line.rend(), [](char c) {
                 return std::isdigit(c);
             });
-            char a[]{*lowerVal, *latterVal, '\0'};
-            sum += atoi(a);
+            sum += (*lowerVal - '0') * 10 + (*latterVal - '0');
         }
 
         out = [=](auto& o) { o << sum << endl; };
@@ -39,7 +33,8 @@ int main() {
     // Part 2
     dph.AddPart([=](auto& out) mutable {
         int sum = 0;
-        std::vector<std::string> digits{ 
+
+        const std::vector<std::string> digits{ 
             "1", "2", "3", "4", "5", "6", "7", "8", "9",
             "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
         };

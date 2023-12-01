@@ -5,14 +5,7 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "build and debug active file",
+            "name": "[DEBUG] build and debug active file",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${relativeFileDirname}\\bin\\${fileBasenameNoExtension}.exe",
@@ -37,7 +30,13 @@
             "environment": [],
             "preLaunchTask": "Build templater"
         },
-        
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
     ],
     "inputs": [
         {
