@@ -42,6 +42,12 @@ struct Point {
         return {a.x + b.x, a.y + b.y};
     }
 
+    Point& operator+=(const Point& b) {
+        x += b.x;
+        y += b.y;
+        return *this;
+    }
+
     friend bool operator==(const Point& a, const Point& b) {
         return a.x == b.x && a.y == b.y;
     }

@@ -80,6 +80,10 @@
         "unordered_set": "cpp",
         "regex": "cpp",
         "code_template": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "mutex": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

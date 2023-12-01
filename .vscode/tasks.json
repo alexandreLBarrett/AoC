@@ -58,7 +58,6 @@
         "args": [
           "/Zi",
           "/EHsc",
-          //"/O2",
           "/Fe:",
           "${relativeFileDirname}\\bin\\${fileBasenameNoExtension}.exe",
           "/Fo:${relativeFileDirname}\\obj\\",
