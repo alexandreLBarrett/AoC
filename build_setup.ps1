@@ -1,4 +1,4 @@
-$dir = $args[1]
+$dir = $args[0]
 $binPath = "$dir/bin"
 $objPath = "$dir/obj"
 
