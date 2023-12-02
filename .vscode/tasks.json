@@ -58,6 +58,7 @@
         "args": [
           "/Zi",
           "/EHsc",
+          "/O2",
           "/MP",
           "/Fe:",
           "${relativeFileDirname}\\bin\\${fileBasenameNoExtension}.exe",
@@ -65,7 +66,7 @@
           "/Fd:${relativeFileDirname}\\bin\\",
           "${workspaceFolder}\\helpers.cpp",
           "${file}",
-          "/std:c++20"
+          "/std:c++latest"
         ],
         "problemMatcher": [
           "$msCompile"
