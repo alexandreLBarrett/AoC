@@ -44,12 +44,12 @@
       {
         "type": "shell",
         "label": "Create build dirs",
-        "command": "${workspaceFolder}/build_setup.ps1 ${fileDirname}"
+        "command": "\"${workspaceFolder}/build_setup.bat\" ${fileDirname}"
       },
       {
         "type": "shell",
         "label": "Create templater build dirs",
-        "command": "${workspaceFolder}/build_setup.ps1 AoC_template"
+        "command": "\"${workspaceFolder}/build_setup.bat\" AoC_template"
       },
       {
         "type": "shell",
