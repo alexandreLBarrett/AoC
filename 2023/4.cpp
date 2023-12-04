@@ -14,7 +14,6 @@ struct Card {
 
     friend istream& operator>>(istream& is, Card& card)
     {
-
         string line;
         getline(is, line, ':');
         getline(is, line, '|');
