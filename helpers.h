@@ -97,7 +97,7 @@ public:
         PrintCallback printResults = [](auto&){};
 
         int i = 1;
-        for (const auto func : functions) {
+        for (const auto& func : functions) {
             o << "Part " << i++ << ": \n";
 
             print(o, time([&]{

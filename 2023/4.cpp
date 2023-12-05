@@ -9,7 +9,7 @@ using namespace std;
 
 // puzzle: https://adventofcode.com/2023/day/4
 struct Card {
-    std::set<int> winning;
+    std::vector<int> winning;
     std::set<int> has;
 
     friend istream& operator>>(istream& is, Card& card)
@@ -23,7 +23,7 @@ struct Card {
 
         string val;
         while (winningSteam >> val) 
-            card.winning.insert(stoi(val));
+            card.winning.push_back(stoi(val));
 
         while (hasStream >> val) 
             card.has.insert(stoi(val));
