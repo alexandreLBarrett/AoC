@@ -71,12 +71,7 @@ class DayPartHandler {
         if (time > 1) {
             o << time << "s" << std::endl;
         } else {
-            auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(val).count();
-            auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(val).count();
-
-            double millis = milli + nano / 1000.0f;
-
-            o << millis << "ms" << std::endl;
+            o << val.count() / 1e6f << "ms" << std::endl;
         }
         o << "[=====================]" << std::endl;
         return o;
