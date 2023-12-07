@@ -108,7 +108,7 @@ int main() {
         uint64_t sum{};
         auto size = hands.size();
         for (int i = 0; i < size; ++i) {
-            int rank = size - i;
+            uint64_t rank = size - i;
 
             auto& hand = hands[i];
             sum += hand.bid * rank;
