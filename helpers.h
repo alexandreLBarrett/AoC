@@ -9,6 +9,41 @@
 
 #include <clocale>
 
+template<class T1, class T2>
+std::istream& operator>>(std::istream& is, std::pair<T1, T2>& data) {
+    is >> data.first;
+    is >> data.second;
+    return is;
+}
+
+template<class ...Ts>
+std::istream& operator>>(std::istream& is, std::tuple<Ts...>& data) {
+    std::apply([&](auto&& val) {
+        is >> val;
+    }, data);
+    return is;
+}
+
+template<class T>
+std::istream& operator>>(std::istream& is, std::vector<T>& data) {
+
+    std::string s;
+    std::getline(is, s);
+
+    std::stringstream ss{std::move(s)};
+
+    if (!ss)
+        return is;
+
+    do {
+        T val{};
+        ss >> val;
+        data.push_back(std::move(val));
+    } while(ss && !ss.eof());
+
+    return is;
+}
+
 
 class FileParser {
     mutable std::ifstream file;

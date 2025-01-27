@@ -84,6 +84,9 @@
         "mutex": "cpp",
         "ranges": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "codecvt": "cpp",
+        "print": "cpp",
+        "semaphore": "cpp"
     }
 }

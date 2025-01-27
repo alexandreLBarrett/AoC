@@ -7,6 +7,7 @@
 #include <numeric>
 #include <iostream>
 #include <regex>
+#include <filesystem>
 
 using namespace std;
 
@@ -26,15 +27,18 @@ string concat(initializer_list<const char*> values) {
     return accumulate(begin(values), end(values), string());
 }
 
-void createFile(const string& filename) {
-    ofstream ofs(filename);
-    ofs.close();
-}
-
 void createFileWithContent(const string& filename, const string& content) {
     ofstream ofs(filename);
     ofs << content;
-    ofs.close();
+
+    if (ofs)
+    {
+        cout << "Created " << filename << std::endl;
+    }
+    else 
+    {
+        cout << "Failed to create " << filename << std::endl;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -56,13 +60,16 @@ int main(int argc, char** argv) {
     templateFileContent = regex_replace(templateFileContent, regex("__DAY__"), day.data());
 
     auto basePath = concat({outPath.data(), "\\", year.data(), "\\"});
+
+    std::filesystem::create_directories(basePath);
+
     auto sourceFile = concat({basePath.c_str(), day.data(), ".cpp"});
     auto dataFile = concat({basePath.c_str(), day.data(), "-data"});
     auto dataTestFile = concat({basePath.c_str(), day.data(), "-data-test"});
 
     createFileWithContent(sourceFile, templateFileContent);
-    createFile(dataFile);
-    createFile(dataTestFile);
+    createFileWithContent(dataFile, "");
+    createFileWithContent(dataTestFile, "");
 
-    cout << "Created template files for puzzle " << day.data() << endl;
+    cout << "Created template files for puzzle " << year.data() << "/" << day.data() << endl;
 }

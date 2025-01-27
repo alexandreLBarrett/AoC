@@ -4,6 +4,11 @@
 #include <algorithm>
 #include <sstream>
 #include <cassert>
+#include <print>
+#include <ranges>
+#include <numeric>
+#include <map>
+#include <utility>
 
 template<class T>
 struct VectorHash {
