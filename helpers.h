@@ -6,6 +6,8 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
+#include <iterator>
+#include <print>
 
 #include <clocale>
 
@@ -65,6 +67,14 @@ public:
         return val;
     }
 
+
+    std::string getFileContent() noexcept {
+        return std::string{
+            std::istreambuf_iterator<char>{file},
+            std::istreambuf_iterator<char>{}
+        };
+    };
+
     template<class T>
     constexpr std::vector<T> parseRest(const std::function<T(std::ifstream&)> process) const noexcept {
         std::vector<T> container;
@@ -75,6 +85,21 @@ public:
 
         return container;
     }
+
+    template<class T>
+    constexpr std::vector<T> parseRestUntilFail(const std::function<std::optional<T>(std::ifstream&)> process) const noexcept {
+        std::vector<T> container;
+
+        while (file && !file.eof()) {
+            auto result = process(file);
+            if (result)
+                container.push_back(std::move(*result));
+            else break;
+        }
+
+        return container;
+    }
+
 
     template<class T>
     constexpr std::vector<T> parseRest() const noexcept {
@@ -145,4 +170,11 @@ private:
 int constexpr length(const char* str)
 {
     return *str ? 1 + length(str + 1) : 0;
+}
+
+template<class T>
+void printVector(const std::vector<T>& vec) {
+    for (const auto& elem : vec)
+        std::print("{} ", elem);
+    std::println("");
 }

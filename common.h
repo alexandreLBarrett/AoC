@@ -9,6 +9,9 @@
 #include <numeric>
 #include <map>
 #include <utility>
+#include <regex>
+#include <ranges>
+#include <algorithm>
 
 template<class T>
 struct VectorHash {
